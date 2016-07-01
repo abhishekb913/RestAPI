@@ -33,11 +33,15 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 					response = s.getDetails(params['id'])
 				else:
 					response = {"status" : 400 , "msg" : "Bad Request"}
+			# Setting http response
 			self.send_response(response["status"])
+			# Removing status value from response
 			response.pop("status", None)
 			self.end_headers()
+			# Writing response
 			json.dump(response, self.wfile)
 		else :
+			# Default
 			self.send_response(400)
 			self.end_headers()
 			json.dump({'msg': 'Bad Request'}, self.wfile)
@@ -56,24 +60,29 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 		elif self.path == "/generateOTP" :
 			response = u.generateOTP(data)
 		elif self.path == "/createStudent" :
-			response = {"status" : 401}
+			response = {"status" : 401, "msg" : "Authorization Failed"}
 			if self.authenticate():
 				s = Student()
 				response = s.create(data)
 		else :
+			# Default
 			response = {"status" : 400, "msg" : "Bad Request"}
+		# Setting http response
 		self.send_response(response["status"])
+		# Removing status value from response
 		response.pop("status", None)
 		self.end_headers()
+		# Writing response
 		json.dump(response, self.wfile)
 
-	# Put requests
+	# Routing post requests
+	# Default Bad request
 	def do_PUT(self):
-		if re.match("/student\?.*", self.path):
+		if re.match("/updateStudent\?.*", self.path):
 			response = {"status" : 401, "msg" : "Authorization Failed"}
 			if self.authenticate():
 				# getting get url parameters
-				params = self.path.split("/student?", 1)[1]
+				params = self.path.split("/updateStudent?", 1)[1]
 				params = dict(qc.split("=") for qc in params.split("&"))
 				if 'id' in params:
 					data = self.rfile.read(int(self.headers['Content-Length']))
@@ -82,11 +91,15 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 					response = s.update(params['id'], data)
 				else:
 					response = {"status" : 400 , "msg" : "Bad Request"}
+			# Setting http response
 			self.send_response(response["status"])
 			self.end_headers()
+			# Removing status value from response
 			response.pop("status", None)
+			# Writing response
 			json.dump(response, self.wfile)
 		else :
+			# Default
 			self.send_response(400)
 			self.end_headers()
 			json.dump({'msg': 'Bad Request'}, self.wfile)
@@ -105,11 +118,15 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 					response = s.delete(params['id'])
 				else:
 					response = {"status" : 400 , "msg" : "Bad Request"}
+			# Setting http response
 			self.send_response(response["status"])
 			self.end_headers()
+			# Removing status value from response
 			response.pop("status", None)
+			# Writing response
 			json.dump(response, self.wfile)
 		else :
+			# Default
 			self.send_response(400)
 			self.end_headers()
 			json.dump({'msg': 'Bad Request'}, self.wfile)

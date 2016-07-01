@@ -13,12 +13,16 @@ class User(object):
 	# Generates OTP
 	# Return OTP
 	def register(self, data):
+		# Checking rules
+		rule = {"phone" : 1, "name" : 1, "email" : 1}
+		if not(checkRuleALL(rule, data)):
+			return {"status" : 400, "msg" : "Wrong input"}
 		#checking if phone number already exists
 		result = self.cursor.execute("SELECT * FROM user where phone = '"+data["phone"]+"'")
 		if result == 0:
 			otp = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
 			try:
-				# Storing regsitered user information
+				# Storing registered user information
 				self.cursor.execute("INSERT INTO user (name, phone, email, OTP) VALUES ('"+data["name"]+"', '"+data["phone"]+"', '"+data["email"]+"', '"+otp+"')")
 				self.db.commit()
 				return {'otp' : otp, 'phone' : data["phone"], "status" : 200, "msg" : "OK"}
@@ -28,7 +32,13 @@ class User(object):
 		else :
 			return {"status" : 400, "msg" : "User Already registered"}
 
+	# Generate OTP if user logs out or did not log in after register.
 	def generateOTP(self, data):
+		# Checking rules
+		rule = {"phone" : 1}
+		if not(checkRuleALL(rule, data)):
+			return {"status" : 400, "msg" : "Wrong input"}
+		#checking if use registered
 		result = self.cursor.execute("SELECT * FROM user where phone = '"+data["phone"]+"'")
 		if result == 0:
 			return {"status" : 400, "msg" : "User Not registered"}
@@ -44,6 +54,10 @@ class User(object):
 
 	# Login user. Takes phone and OTP
 	def login(self, data):
+		# Checking rules
+		rule = {"phone" : 1, "otp" : 1}
+		if not(checkRuleALL(rule, data)):
+			return {"status" : 400, "msg" : "Wrong input"}
 		# Checking if user registered
 		result = self.cursor.execute("SELECT OTP FROM user where phone = '"+data["phone"]+"'")
 		if result == 0 :

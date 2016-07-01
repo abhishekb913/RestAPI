@@ -8,6 +8,10 @@ class Student(object):
 
 	# Create student record
 	def create(self, data):
+		# Checking rules
+		rule = {"name" : 1, "class" : 1, "section" : 1}
+		if not(checkRuleALL(rule, data)):
+			return {"status" : 400, "msg" : "Wrong input"}
 		try:
 			self.cursor.execute("INSERT INTO students (name, class, section) VALUES ('"+data["name"]+"', "+str(data["class"])+", '"+data["section"]+"')")
 			self.db.commit()
@@ -18,6 +22,10 @@ class Student(object):
 
 	# Update a student's record
 	def update(self, studentID, data):
+		# Checking rules
+		rule = {"name" : 1, "class" : 1, "section" : 1}
+		if not(checkRuleEITHER(rule, data)) or len(data) == 0:
+			return {"status" : 400, "msg" : "Wrong input"}
 		query = ""
 		for key, value in data.items():
 			if type(value) is int:
@@ -26,7 +34,7 @@ class Student(object):
 				query += key +"='"+ str(value) +"',"
 		if query:
 			query = query.rstrip(",")
-		print query
+		# Check if record exists
 		result = self.cursor.execute("SELECT * FROM students WHERE id = "+str(studentID))
 		if result == 0:
 			return {"status" : 404, "msg" : "Record Not Found"}
@@ -56,7 +64,7 @@ class Student(object):
 	def getDetails(self, studentID):
 		result = self.cursor.execute("SELECT * FROM students WHERE id = "+str(studentID))
 		if result == 0:
-			return {"status" : 404, "msg" : "No record found"}
+			return {"status" : 404, "msg" : "Record Not Found"}
 		else:
 			results = self.cursor.fetchall()
 			response = {}
