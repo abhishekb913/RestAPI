@@ -4,6 +4,7 @@ import re
 import json
 from user import User
 from student import Student
+from const import *
 
 class MyRequestHandler (BaseHTTPRequestHandler) :
 
@@ -18,10 +19,13 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 						auth = u.authenticate(userPassword[0], userPassword[1])
 		return auth
 
+	# Routing get requests
+	# Default Bad request
 	def do_GET(self) :
 		if re.match("/student\?.*", self.path):
-			response = {"status" : 401}
+			response = {"status" : 401, "msg" : "Authorization Failed"}
 			if self.authenticate():
+				# getting get url parameters
 				params = self.path.split("/student?", 1)[1]
 				params = dict(qc.split("=") for qc in params.split("&"))
 				if 'id' in params:
@@ -30,6 +34,7 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 				else:
 					response = {"status" : 400 , "msg" : "Bad Request"}
 			self.send_response(response["status"])
+			response.pop("status", None)
 			self.end_headers()
 			json.dump(response, self.wfile)
 		else :
@@ -37,7 +42,10 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 			self.end_headers()
 			json.dump({'msg': 'Bad Request'}, self.wfile)
 
+	# Routing post requests
+	# Default Bad request
 	def do_POST(self) :
+		# Getting body data
 		data = self.rfile.read(int(self.headers['Content-Length']))
 		data = json.loads(data)
 		u = User()
@@ -45,6 +53,8 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 			response = u.register(data)
 		elif self.path == "/login" :
 			response = u.login(data)
+		elif self.path == "/generateOTP" :
+			response = u.generateOTP(data)
 		elif self.path == "/createStudent" :
 			response = {"status" : 401}
 			if self.authenticate():
@@ -53,13 +63,17 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 		else :
 			response = {"status" : 400, "msg" : "Bad Request"}
 		self.send_response(response["status"])
+		response.pop("status", None)
 		self.end_headers()
 		json.dump(response, self.wfile)
 
+	# Routing delete requests
+	# Default Bad request
 	def do_DELETE(self) :
 		if re.match("/student\?.*", self.path):
-			response = {"status" : 401}
+			response = {"status" : 401, "msg" : "Authorization Failed"}
 			if self.authenticate():
+				# getting get url parameters
 				params = self.path.split("/student?", 1)[1]
 				params = dict(qc.split("=") for qc in params.split("&"))
 				if 'id' in params:
@@ -69,6 +83,7 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 					response = {"status" : 400 , "msg" : "Bad Request"}
 			self.send_response(response["status"])
 			self.end_headers()
+			response.pop("status", None)
 			json.dump(response, self.wfile)
 		else :
 			self.send_response(400)
@@ -76,20 +91,6 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 			json.dump({'msg': 'Bad Request'}, self.wfile)
 
 
-server = HTTPServer(("localhost", 8000), MyRequestHandler)
+server = HTTPServer(("localhost", PORT), MyRequestHandler)
 print "server started"
 server.serve_forever()
-
-
-
-# import MySQLdb
-
-# # Open database connection
-# db = MySQLdb.connect("localhost","root","qwerty","localCashboss" )
-
-# # prepare a cursor object using cursor() method
-# cursor = db.cursor()
-
-# print cursor.execute("SELECT * FROM cm_brand")
-
-# db.close()

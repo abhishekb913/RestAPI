@@ -33,19 +33,6 @@ CREATE TABLE `students` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `students` WRITE;
-/*!40000 ALTER TABLE `students` DISABLE KEYS */;
-
-INSERT INTO `students` (`id`, `name`, `class`, `section`)
-VALUES
-	(1,'test',1,'D'),
-	(5,'test',1,'D'),
-	(6,'test',1,'D'),
-	(7,'test',1,'D');
-
-/*!40000 ALTER TABLE `students` ENABLE KEYS */;
-UNLOCK TABLES;
-
 
 # Dump of table user
 # ------------------------------------------------------------
@@ -61,18 +48,6 @@ CREATE TABLE `user` (
   `auth` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-
-INSERT INTO `user` (`id`, `name`, `phone`, `email`, `OTP`, `auth`)
-VALUES
-	(4,'abhishek','9468700067','abhishekb913@gmail.com','IIN5B6','r8v5ZKCraM6RDHUCO29t05tt5tT5q4');
-
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
-
-
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

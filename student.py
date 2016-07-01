@@ -1,10 +1,14 @@
 import MySQLdb
+from const import *
 
+
+# implement student update
 class Student(object):
 	def __init__(self):
-		self.db = MySQLdb.connect("localhost","root","qwerty","db")
+		self.db = MySQLdb.connect(SERVER,USERNAME,PASSWORD,DATABASE_NAME)
 		self.cursor = self.db.cursor()
 
+	# Create student record
 	def create(self, data):
 		try:
 			self.cursor.execute("INSERT INTO students (name, class, section) VALUES ('"+data["name"]+"', "+str(data["class"])+", '"+data["section"]+"')")
@@ -14,6 +18,7 @@ class Student(object):
 			self.db.rollback()
 			return {"status" : 500, "msg" : "DB error"}
 
+	# Delete student record
 	def delete(self, studentID):
 		try:
 			result = self.cursor.execute("DELETE FROM students where id = "+str(studentID))
@@ -26,6 +31,7 @@ class Student(object):
 			self.db.rollback()
 			return {"status" : 500, "msg" : "DB error"}
 
+	# Get student information
 	def getDetails(self, studentID):
 		result = self.cursor.execute("SELECT * FROM students WHERE id = "+str(studentID))
 		if result == 0:
