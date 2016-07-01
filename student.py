@@ -7,7 +7,7 @@ class Student(object):
 
 	def create(self, data):
 		try:
-			self.cursor.execute("INSERT INTO students (name, class, section) VALUES ('"+data["name"]+"', '"+data["class"]+"', '"+data["section"]+"')")
+			self.cursor.execute("INSERT INTO students (name, class, section) VALUES ('"+data["name"]+"', "+str(data["class"])+", '"+data["section"]+"')")
 			self.db.commit()
 			return {"status" : 200, "msg" : "OK"}
 		except:
@@ -16,15 +16,18 @@ class Student(object):
 
 	def delete(self, studentID):
 		try:
-			self.cursor.execute("DELETE FROM students where id = "+studentID)
+			result = self.cursor.execute("DELETE FROM students where id = "+str(studentID))
 			self.db.commit()
-			return {"status" : 200, "msg" : "OK"}
+			if result == 0:
+				return {"status" : 404, "msg" : "Record Not Found"}
+			else :
+				return {"status" : 200, "msg" : "OK"}
 		except:
 			self.db.rollback()
 			return {"status" : 500, "msg" : "DB error"}
 
 	def getDetails(self, studentID):
-		result = self.cursor.execute("SELECT * FROM students WHERE id = "+ studentID)
+		result = self.cursor.execute("SELECT * FROM students WHERE id = "+str(studentID))
 		if result == 0:
 			return {"status" : 404, "msg" : "No record found"}
 		else:
