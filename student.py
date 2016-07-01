@@ -1,8 +1,6 @@
 import MySQLdb
 from const import *
 
-
-# implement student update
 class Student(object):
 	def __init__(self):
 		self.db = MySQLdb.connect(SERVER,USERNAME,PASSWORD,DATABASE_NAME)
@@ -17,6 +15,29 @@ class Student(object):
 		except:
 			self.db.rollback()
 			return {"status" : 500, "msg" : "DB error"}
+
+	# Update a student's record
+	def update(self, studentID, data):
+		query = ""
+		for key, value in data.items():
+			if type(value) is int:
+				query += key +"="+ str(value) +","
+			else:
+				query += key +"='"+ str(value) +"',"
+		if query:
+			query = query.rstrip(",")
+		print query
+		result = self.cursor.execute("SELECT * FROM students WHERE id = "+str(studentID))
+		if result == 0:
+			return {"status" : 404, "msg" : "Record Not Found"}
+		else:
+			try:
+				self.cursor.execute("UPDATE students SET "+query+" where id = "+str(studentID))
+				self.db.commit()
+				return {"status" : 200, "msg" : "OK"}
+			except:
+				self.db.rollback()
+				return {"status" : 500, "msg" : "DB error"}
 
 	# Delete student record
 	def delete(self, studentID):

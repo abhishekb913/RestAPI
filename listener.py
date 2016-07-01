@@ -67,6 +67,30 @@ class MyRequestHandler (BaseHTTPRequestHandler) :
 		self.end_headers()
 		json.dump(response, self.wfile)
 
+	# Put requests
+	def do_PUT(self):
+		if re.match("/student\?.*", self.path):
+			response = {"status" : 401, "msg" : "Authorization Failed"}
+			if self.authenticate():
+				# getting get url parameters
+				params = self.path.split("/student?", 1)[1]
+				params = dict(qc.split("=") for qc in params.split("&"))
+				if 'id' in params:
+					data = self.rfile.read(int(self.headers['Content-Length']))
+					data = json.loads(data)
+					s = Student()
+					response = s.update(params['id'], data)
+				else:
+					response = {"status" : 400 , "msg" : "Bad Request"}
+			self.send_response(response["status"])
+			self.end_headers()
+			response.pop("status", None)
+			json.dump(response, self.wfile)
+		else :
+			self.send_response(400)
+			self.end_headers()
+			json.dump({'msg': 'Bad Request'}, self.wfile)
+
 	# Routing delete requests
 	# Default Bad request
 	def do_DELETE(self) :

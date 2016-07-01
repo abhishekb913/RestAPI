@@ -57,7 +57,16 @@ Set username as phone number and password and auth value corresponding to a user
 	Sample Response - {"section": "D", "studentID": 1, "name": "abhishek", "class": 5}
 	Response - {"msg": "No record found"} if no record found
 
-3. Delete student record
+3. Update Student Entry
+	API call(PUT) - http://localhost:8080/student?id=4
+	Here id represent the student record id whose details we are fetching
+
+	Raw data sent - {"name" : "abhishek", "class" : "5", "section" : "D"}
+	Sample Response - {"msg": "OK"} if everything is fine
+	Response - {"msg": "Record Not Found"} if record not found
+
+
+4. Delete student record
 	API call(DELETE) - http://localhost:8080/student?id=4
 	Sample Response - {"msg": "OK"} if record deleted
 	Response - {"msg": "Record Not Found"} if record not found
